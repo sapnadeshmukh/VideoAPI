@@ -1,0 +1,26 @@
+{
+  "name": "videoapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sapnadeshmukh/VideoAPI.git"
+  },
+  "author": "sapna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sapnadeshmukh/VideoAPI/issues"
+  },
+  "homepage": "https://github.com/sapnadeshmukh/VideoAPI#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "multer": "^1.4.3",
+    "nodemon": "^2.0.12"
+  }
+}
