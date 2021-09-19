@@ -2,9 +2,7 @@
 const connection=require('../database/connection')
 const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
-// const jwtToken=require('./signup')
-// const jwt = require('jsonwebtoken');
-const {tokenData ,authenticateToken}=require('../middleware/createToken')
+const {tokenData }=require('../middleware/createToken')
 
 
 
@@ -32,10 +30,9 @@ module.exports.login=async (req, res) => {
                         "success":"login sucessfully"
                     })
                     const Data = { email: req.body.email }
-                    const accessToken = tokenData(Data, process.env.SECRETKEY,{expiresIn: "24h"})
+                    const accessToken = tokenData(Data, process.env.SECRETKEY)
                     console.log("Token =",accessToken)
                     // res.cookie("key=", accessToken);
-                    // console.log(accessToken );
                 }
                 else{
                     console.log("Email and password does not match")

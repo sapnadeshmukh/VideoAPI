@@ -8,13 +8,9 @@ const tokenData = (data, SecretKey) => {
 }
 
 
-
 // To verify Token
 var authenticateToken =(token,SecretKey)=>{
     return jwt.verify(token,SecretKey)
-    
-
-
 }
 
 module.exports = {tokenData ,authenticateToken}

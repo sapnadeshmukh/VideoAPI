@@ -1,5 +1,7 @@
 const express = require('express');
 const connection=require('../database/connection')
+const {authenticateToken}=require('../middleware/createToken')
+
 
 const multer = require('multer');
 const path = require('path');
@@ -10,7 +12,6 @@ const imageStorage = multer.diskStorage({
     destination: 'images', // Destination to store image 
     filename: (req, file, cb) => {
         cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname))
-        // file.fieldname is name of the field (image), path.extname get the uploaded file extension
     }
 });
 
@@ -27,38 +28,50 @@ const imageUpload = multer({
     }
 })  
     module.exports.imageUpload=imageUpload
-// For Single image upload
+    
+    // To store  image in Database
     module.exports.allfile=(req, res) => {
+
+    var token = req.headers.cookie
+    var TOKEN=token.split(';')
+    console.log(TOKEN[0]);
         
-        // let sql="UPDATE loginSignup SET image='" +req.file+ "'WHERE id="+ req.params.id;
-        // let quary = connection.query(sql,(err,result)=>{
-        //     if(err) throw err
-        //     console.log("image added successfully!!")
-        //     // res.send("image added suceefully!!!")
-        // })
-    console.log(req.file.filename)
-    // console.log(imageUpload.single('image'))
-    let sql="UPDATE loginSignup SET image='" +req.file.filename+ "'WHERE id="+ req.params.id;
-        let quary = connection.query(sql,(err,result)=>{
-            if(err) throw err
-            console.log("image added successfully!!")
-            // res.send("image added suceefully!!!")
-        })
-    res.send(req.file)
+        if(token!=undefined){
+            const data=authenticateToken(TOKEN[0],process.env.SECRETKEY)
+
+
+            let sql="UPDATE loginSignup SET image='" +req.file.filename+ "'WHERE id="+ req.params.id;
+                let quary = connection.query(sql,(err,result)=>{
+                    if(err) throw err
+                    console.log(req.file)
+
+                    console.log("image added successfully in DB!!")
+                    res.send("image added suceefully in DB!!!")
+                })
+        }else{
+            console.log("No use found")
+        }
 
 }
-// ---------------------------------
 
-// For Multiple image uplaod
-// router.post('/uploadBulkImage', imageUpload.array('images', 4), (req, res) => {
-//     res.send(req.files)
-// }, (error, req, res, next) => {
-//     res.status(400).send({ error: error.message })
-// })
 
-// // ---------------------------------------------------------------------------- //
+// To view Image
+module.exports.get_single_image=(req,res)=> {
+    let sql = "SELECT image FROM loginSignup WHERE id=" + req.params.id;
+    var query = connection.query(sql,(err,data)=>{
+        if(err) throw e
+        console.log(data[0])
+        const result = Object.values(JSON.parse(JSON.stringify(data[0])));
+        console.log(result[0])
+        res.sendFile(`/home/sapna/Desktop/VideoAPI/images/${result[0]}`)
 
-// // Video Upload
+
+        
+    })
+}
+
+
+// // To Upload Video
 const videoStorage = multer.diskStorage({
     destination: 'videos', // Destination to store video 
     filename: (req, file, cb) => {
@@ -81,30 +94,39 @@ const videoUpload = multer({
 
 module.exports.videoUpload=videoUpload;
 
-// module.exports.getfile=(req, res) => {
-        
-//     let sql="UPDATE loginSignup SET image='" +req.file+ "'WHERE id="+ req.params.id;
-//     let quary = connection.query(sql,(err,result)=>{
-//         if(err) throw err
-//         console.log("image added successfully!!")
-//         // res.send("image added suceefully!!!")
-//     })
-// // console.log(req)
-//     res.send(req.file)
-// }
 
+// To store  video in Database
 
-module.exports.get_single_image=(req,res)=> {
-    let sql = "SELECT * FROM loginSignup WHERE image=" + req.params.id;
-    var query = connection.query(sql,(err,data)=>{
-        if(err) throw err;
-        res.send(data)
-    })
+module.exports.allvideo=(req, res) => {
+    console.log(req.file.filename)
+    console.log(typeof(req.file.filename))
+    let sql="UPDATE loginSignup SET video='" +req.file.filename+ "'WHERE id="+ req.params.id;
+        let quary = connection.query(sql,(err,result)=>{
+            if(err) throw err
+            console.log(req.file)
+
+            console.log("video added successfully in DB!!")
+            res.send("video added successfully in DB!!!")
+        })
+
 }
 
 
-// -------------------------
 
+//  To watch video
+    module.exports.get_single_video=(req,res)=> {
+        let sql = "SELECT video FROM loginSignup WHERE id=" + req.params.id;
+        var query = connection.query(sql,(err,data)=>{
+            if(err) throw e
+            const result = Object.values(JSON.parse(JSON.stringify(data[0])));
+            res.sendFile(`/home/sapna/Desktop/VideoAPI/videos/${result[0]}`)
+
+
+            
+        })
+    }
+
+// To upload pdf
 
 const pdfStorage = multer.diskStorage({
     destination: 'pdf', // Destination to store video 
@@ -127,3 +149,33 @@ const pdfUpload = multer({
 })
 
 module.exports.pdfUpload=pdfUpload;
+
+// To store  pdf in Database
+module.exports.allPdf=(req, res) => {
+    console.log(req.file.filename)
+    console.log(typeof(req.file.filename))
+    let sql="UPDATE loginSignup SET pdf='" +req.file.filename+ "'WHERE id="+ req.params.id;
+        let quary = connection.query(sql,(err,result)=>{
+            if(err) throw err
+            console.log(req.file)
+
+            console.log("pdf added successfully in DB!!")
+            res.send("pdf added suceefully in DB!!!")
+        })
+
+}
+
+
+// To  view Pdf
+module.exports.get_single_pdf=(req,res)=> {
+
+    let sql = "SELECT pdf FROM loginSignup WHERE id=" + req.params.id;
+    var query = connection.query(sql,(err,data)=>{
+        if(err) throw e
+        const result = Object.values(JSON.parse(JSON.stringify(data[0])));
+        res.sendFile(`/home/sapna/Desktop/VideoAPI/pdf/${result[0]}`)
+
+
+        
+    })
+}
